@@ -110,7 +110,11 @@ float* acquire_spectrum(Spectrum_Settings specSet)
 		SPECTRUM_WaitForTraceReady(timeoutMsec, &ready);
 	}
 	SPECTRUM_GetTrace(trace, maxTracePoints, traceData, &outTracePoints);
+	Spectrum_TraceInfo traceInfo;
+	SPECTRUM_GetTraceInfo(&traceInfo);
 	DEVICE_Stop();
+
+	cout << "Trace Data Status: " << traceInfo.acqDataStatus << endl;
 
 	return traceData;
 }
@@ -133,7 +137,7 @@ int peak_power_detector(float* traceData, double* freq, Spectrum_Settings specSe
 void spectrum_example()
 {
 	double cf = 1e9;
-	double refLevel = 0;
+	double refLevel = -30;
 	double span = 40e6;
 	double rbw = 300e3;
 	Spectrum_Settings specSet;
@@ -446,4 +450,35 @@ void config_trigger(TriggerMode trigMode, double trigLevel, TriggerSource trigSo
 	TRIG_SetIFPowerTriggerLevel(trigLevel);
 	TRIG_SetTriggerSource(trigSource);
 	TRIG_SetTriggerPositionPercent(10);
+}
+
+
+void if_playback()
+{
+	search_connect();
+	const char* fileName = "C:\\SignalVu-PC Files\\if_stream_test.r3f";
+	wchar_t wFileName[300];
+	swprintf(wFileName, 300, L"%S", fileName);   // %S is 1-byte-char type for sWprintf
+	
+	FILE* fp = _wfopen(wFileName, L"rb");
+	if (fp == NULL)
+	{
+		printf("Error Opening File: \"%S\"\n", wFileName);
+	}
+	
+	int start = 0;
+	int stop = 100;
+	double skip = 0;
+	bool loop = false;
+	bool rt = true;
+	bool complete = false;
+
+	PLAYBACK_OpenDiskFile(wFileName, start, stop, skip, loop, rt);
+	DEVICE_Run();
+	while (complete == false)
+	{
+		PLAYBACK_GetReplayComplete(&complete);
+	}
+	cout << "Playback Complete: " << complete << endl;
+	system("pause");
 }

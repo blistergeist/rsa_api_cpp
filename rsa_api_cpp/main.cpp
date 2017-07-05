@@ -9,5 +9,6 @@ int main()
 	//dpx_example();
 	//iq_stream_example();
 	//if_stream_example();
+	if_playback();
 
 }

@@ -33,3 +33,5 @@ void config_iq_stream(double cf, double refLevel, double bw, char* fileName, IQS
 
 void config_if_stream(double cf, double refLevel, char* fileDir, char* fileName, int durationMsec);
 void if_stream_example();
+
+void if_playback();
